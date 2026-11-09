@@ -20,20 +20,16 @@ const app = express();
 
 const allowedOrigins = [
     'http://localhost:5179',
-    'https://dipoma-comtech.netlify.app'
-];
+    'https://dipoma-comtech.netlify.app',
+    process.env.CLIENT_URL?.replace(/\/$/, ''),
+].filter(Boolean);
 
 app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin) return callback(null, true);
-
-        if (allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+        callback(new Error('Not allowed by CORS'));
     },
-    credentials: true
+    credentials: true,
 }));
 
 app.use(express.json());
